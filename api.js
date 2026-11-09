@@ -1,9 +1,10 @@
 // Спільний шар даних для index.html та admin.html.
-// Якщо API_URL порожній — DEMO-режим через localStorage (лише цей браузер).
+// Бекенд — Supabase (RPC-функції з supabase/schema.sql).
+// Якщо SUPABASE_URL/KEY порожні — DEMO-режим через localStorage (лише цей браузер).
 (function () {
   const CFG = window.TOT_CONFIG;
   const DEMO_KEY = "tot_demo_db2";
-  const isDemo = !CFG.API_URL;
+  const isDemo = !(CFG.SUPABASE_URL && CFG.SUPABASE_KEY);
 
   // ---------- aggregate for the Employability Budget (same logic as in Code.gs) ----------
   function budgetSummary(responses) {
@@ -50,31 +51,34 @@
     return { ok: true };
   }
 
-  // ---------- public API ----------
+  // ---------- public API (Supabase RPC) ----------
+  async function rpc(fn, args) {
+    const res = await fetch(CFG.SUPABASE_URL.replace(/\/+$/, "") + "/rest/v1/rpc/" + fn, {
+      method: "POST",
+      headers: { "Content-Type": "application/json", apikey: CFG.SUPABASE_KEY },
+      body: JSON.stringify(args || {})
+    });
+    const text = await res.text();
+    let data = null; try { data = text ? JSON.parse(text) : null; } catch (e) {}
+    if (!res.ok) throw new Error((data && (data.message || data.hint)) || "HTTP " + res.status);
+    return data;
+  }
   async function post(body) {
     if (isDemo) return demoHandle(body);
-    // Без заголовка Content-Type браузер шле text/plain — Apps Script приймає це без CORS-preflight
-    const res = await fetch(CFG.API_URL, { method: "POST", body: JSON.stringify(body) });
-    const data = await res.json();
-    if (!data.ok) throw new Error(data.error || "Request failed");
-    return data;
+    if (body.action === "join") await rpc("join_student", { p_client_id: body.clientId, p_name: body.name });
+    else if (body.action === "save") await rpc("save_response", { p_client_id: body.clientId, p_name: body.name, p_activity: body.activity, p_key: body.key, p_value: body.value });
+    else if (body.action === "reset") await rpc("admin_reset", { p_key: body.key });
+    return { ok: true };
   }
-  async function get(params) {
-    const qs = Object.keys(params).map((k) => k + "=" + encodeURIComponent(params[k])).join("&");
-    const res = await fetch(CFG.API_URL + "?" + qs + "&t=" + Date.now());
-    const data = await res.json();
-    if (!data.ok) throw new Error(data.error || "Request failed");
-    return data;
-  }
-  // Admin: all raw data (needs key)
+  // Admin: all raw data (needs the admin password)
   async function results(key) {
     if (isDemo) return Object.assign({ ok: true }, demoLoad());
-    return get({ action: "results", key: key || "" });
+    return Object.assign({ ok: true }, await rpc("admin_results", { p_key: key || "" }));
   }
   // Students: only the anonymous aggregate of the budget task
   async function budgetRanking() {
     if (isDemo) return Object.assign({ ok: true }, budgetSummary(demoLoad().responses));
-    return get({ action: "summary", activity: "budget" });
+    return Object.assign({ ok: true }, await rpc("budget_summary", {}));
   }
 
   window.TOT_API = { isDemo, post, results, budgetRanking, budgetSummary };

@@ -1,11 +1,14 @@
 // ============================================================
 //  НАЛАШТУВАННЯ
 // ============================================================
-// Встав сюди URL веб-застосунку Google Apps Script (закінчується на /exec).
-// Поки рядок порожній — працює ДЕМО-режим: відповіді зберігаються лише
+// Supabase: Project Settings → API (або Connect).
+//   SUPABASE_URL — Project URL, напр. "https://abcd1234.supabase.co"
+//   SUPABASE_KEY — publishable / anon public key (НЕ service_role і НЕ secret!)
+// Поки обидва рядки порожні — працює ДЕМО-режим: відповіді зберігаються лише
 // в цьому браузері (зручно, щоб перевірити index.html + admin.html локально).
 window.TOT_CONFIG = {
-  API_URL: "",
+  SUPABASE_URL: "",
+  SUPABASE_KEY: "",
 
   // Як часто адмінка оновлює результати (мс)
   ADMIN_REFRESH_MS: 4000,

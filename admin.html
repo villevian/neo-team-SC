@@ -103,7 +103,7 @@
 
 <div class="gatebox" id="gate" hidden>
   <h1>Адмінка</h1>
-  <p>Введіть пароль (значення <code>ADMIN_KEY</code> в Apps Script).</p>
+  <p>Введіть пароль адмінки (той, що ви вписали в <code>supabase/schema.sql</code> замість change-me).</p>
   <form id="gateForm">
     <input id="keyInput" type="password" autocomplete="current-password" placeholder="Пароль" required>
     <button class="btn-primary" type="submit" style="width:100%">Увійти</button>
@@ -128,7 +128,7 @@
     </div>
   </header>
   <div class="demo-note" id="demoNote" hidden>
-    ДЕМО-режим: <code>API_URL</code> у config.js порожній, тож тут видно лише відповіді з цього браузера.
+    ДЕМО-режим: <code>SUPABASE_URL</code> / <code>SUPABASE_KEY</code> у config.js порожні, тож тут видно лише відповіді з цього браузера.
     Відкрийте index.html в іншій вкладці, щоб протестувати.
   </div>
 
