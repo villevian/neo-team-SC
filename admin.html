@@ -1,0 +1,384 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="robots" content="noindex">
+<title>Адмінка — Degree or Certificate?</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  body { background: #f6f3f8; }
+  .wrap { max-width: 1180px; margin: 0 auto; padding: 20px 20px 60px; }
+  header { display: flex; align-items: center; gap: 16px; flex-wrap: wrap; }
+  header img { width: 60px; height: 60px; }
+  header h1 { margin: 0; font-family: "Alegreya Sans", sans-serif; font-weight: 800; text-transform: none; font-size: 32px; line-height: 1.1; }
+  header .sub { color: var(--muted); font-size: 17px; }
+  .spacer { flex: 1; }
+  .tools { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; }
+  .btn { border: 1.5px solid var(--line); background: #fff; border-radius: 10px; padding: 8px 14px; font-size: 16px; font-weight: 700; }
+  .btn:hover { border-color: var(--purple); }
+  .btn.danger { color: #b42318; } .btn.danger:hover { border-color: #b42318; }
+  .toggle { display: inline-flex; gap: 6px; align-items: center; font-size: 16px; font-weight: 700; user-select: none; }
+  .toggle input { width: 18px; height: 18px; accent-color: var(--pink); }
+  .demo-note { background: #fff4d6; color: #8a5a00; border-radius: 10px; padding: 8px 12px; font-size: 15px; margin-top: 12px; }
+
+  .stats { display: flex; gap: 12px; margin: 18px 0 14px; flex-wrap: wrap; align-items: flex-end; }
+  .stat { background: #fff; border-radius: 14px; padding: 10px 18px; min-width: 130px; }
+  .stat .v { font-family: "Bebas Neue", sans-serif; font-size: 40px; line-height: 1; }
+  .stat .k { color: var(--muted); font-size: 15px; }
+  .live { font-size: 15px; color: var(--muted); margin-left: auto; }
+  .live .dot { display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: var(--ok); margin-right: 6px; vertical-align: middle; }
+  .live.err .dot { background: var(--warn); } .live.paused .dot { background: #bbb; }
+
+  .tabs { display: flex; gap: 6px; flex-wrap: wrap; border-bottom: 2px solid var(--line); margin-bottom: 16px; }
+  .tab { border: 0; background: none; padding: 10px 16px; font-size: 18px; font-weight: 800; color: var(--muted); border-bottom: 3px solid transparent; margin-bottom: -2px; }
+  .tab[aria-selected="true"] { color: var(--ink); border-color: var(--pink); }
+  .tab .n { font-size: 14px; font-weight: 700; background: var(--line); color: var(--muted); border-radius: 999px; padding: 1px 8px; margin-left: 4px; }
+  .hint { color: var(--muted); font-size: 15px; margin: -4px 0 12px; }
+  h3 { font-size: 20px; margin: 22px 0 10px; }
+
+  .grid { display: grid; gap: 10px; }
+  .card { background: #fff; border-radius: 14px; padding: 14px 18px; cursor: pointer; border: 2px solid transparent; transition: border-color .15s; }
+  .card:hover { border-color: var(--line); }
+  .card.open { border-color: var(--purple-pale); }
+  .card .more { display: none; margin-top: 10px; padding-top: 10px; border-top: 1px dashed var(--line); cursor: auto; }
+  .card.open .more, body.all-open .card .more { display: block; }
+  .row2 { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; align-items: end; }
+  .side { font-size: 19px; font-weight: 700; }
+  .side.b { text-align: right; }
+  .side small, .muted { font-weight: 500; color: var(--muted); font-size: 15px; }
+  .bar { display: flex; height: 28px; border-radius: 8px; overflow: hidden; background: var(--card); margin: 8px 0 0; }
+  .bar span { display: flex; align-items: center; font-weight: 800; font-size: 15px; color: #fff; white-space: nowrap; overflow: hidden; transition: flex-basis .4s ease; }
+  .bar .a { background: var(--pink); padding-left: 10px; }
+  .bar .b { background: var(--purple); justify-content: flex-end; padding-right: 10px; }
+  .bar .for { background: var(--ok); padding-left: 10px; }
+  .bar .against { background: var(--warn); justify-content: flex-end; padding-right: 10px; }
+  .bar .none { background: #d9d2dd; justify-content: center; }
+  .names { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+  .names > div { display: flex; flex-wrap: wrap; gap: 5px; align-content: flex-start; }
+  .names > div.b { justify-content: flex-end; }
+  .chip { font-size: 14px; padding: 2px 9px; border-radius: 8px; display: inline-block; }
+  .chip.a { background: var(--pink-pale); color: #8a1459; }
+  .chip.b { background: var(--purple-pale); color: #5e2a78; }
+  .chip.g { background: #e6f5ec; color: #145c35; }
+  .chip.r { background: #fde8dd; color: #8a2d0a; }
+  .chip.n { background: #eee9f0; color: #4a4450; }
+
+  .rk { display: grid; grid-template-columns: 40px 230px 1fr 150px; gap: 14px; align-items: center; }
+  .rk .no { font-family: "Bebas Neue", sans-serif; font-size: 34px; color: var(--pink); line-height: 1; }
+  .rk .lb { font-size: 19px; font-weight: 700; }
+  .hbar { height: 20px; background: var(--card); border-radius: 10px; overflow: hidden; }
+  .hbar i { display: block; height: 100%; background: var(--pink); border-radius: 10px; transition: width .4s; }
+  .rk .vv { text-align: right; font-size: 15px; color: var(--muted); }
+  .rk .vv b { font-size: 21px; color: var(--ink); }
+  .hl { display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; margin-bottom: 14px; }
+  .hl div { background: var(--purple-pale); border-radius: 12px; padding: 10px 14px; }
+  .hl small { display: block; font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: .05em; color: #5e2a78; }
+  .hl b { font-size: 19px; }
+  .plist { display: grid; gap: 4px; font-size: 16px; }
+  .plist div { display: flex; gap: 8px; align-items: baseline; flex-wrap: wrap; }
+
+  .tablebtn { margin-top: 18px; }
+  .twrap { overflow-x: auto; background: #fff; border-radius: 14px; margin-top: 10px; }
+  table { border-collapse: collapse; width: 100%; font-size: 15px; }
+  th, td { padding: 8px 10px; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+  th { font-size: 13px; color: var(--muted); font-weight: 700; background: #fff; }
+  td.name { font-weight: 700; white-space: nowrap; }
+  td.num { text-align: right; font-variant-numeric: tabular-nums; }
+  td.none { color: #c9c2cc; }
+  .empty { color: var(--muted); padding: 18px; background: #fff; border-radius: 14px; }
+
+  .gatebox { max-width: 420px; margin: 12vh auto; background: #fff; border-radius: 16px; padding: 26px; }
+  .gatebox h1 { margin: 0 0 6px; font-family: "Alegreya Sans", sans-serif; font-weight: 800; text-transform: none; font-size: 30px; }
+  .gatebox input { width: 100%; font: inherit; font-size: 18px; padding: 10px 14px; border: 2px solid var(--line); border-radius: 10px; margin: 10px 0; }
+  .gatebox .err { color: #b42318; min-height: 1.3em; }
+  .btn-primary { border: 0; border-radius: 12px; padding: 12px 20px; font-size: 18px; font-weight: 800; background: var(--pink); color: #fff; }
+  @media (max-width: 700px) {
+    .rk { grid-template-columns: 30px 1fr auto; } .rk .hbar { grid-column: 1 / -1; grid-row: 2; }
+    .hl { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<div class="gatebox" id="gate" hidden>
+  <h1>Адмінка</h1>
+  <p>Введіть пароль (значення <code>ADMIN_KEY</code> в Apps Script).</p>
+  <form id="gateForm">
+    <input id="keyInput" type="password" autocomplete="current-password" placeholder="Пароль" required>
+    <button class="btn-primary" type="submit" style="width:100%">Увійти</button>
+    <p class="err" id="gateErr"></p>
+  </form>
+</div>
+
+<div class="wrap" id="app" hidden>
+  <header>
+    <img src="img/logo.png" alt="ENG HUB">
+    <div>
+      <h1>Degree or Certificate? · результати</h1>
+      <div class="sub">Що обирає група — натисніть на рядок, щоб побачити імена</div>
+    </div>
+    <div class="spacer"></div>
+    <div class="tools">
+      <label class="toggle"><input type="checkbox" id="allOpen"> Розгорнути всі імена</label>
+      <label class="toggle"><input type="checkbox" id="auto" checked> Автооновлення</label>
+      <button class="btn" id="refresh" type="button">Оновити</button>
+      <button class="btn" id="csv" type="button">CSV</button>
+      <button class="btn danger" id="reset" type="button">Очистити все</button>
+    </div>
+  </header>
+  <div class="demo-note" id="demoNote" hidden>
+    ДЕМО-режим: <code>API_URL</code> у config.js порожній, тож тут видно лише відповіді з цього браузера.
+    Відкрийте index.html в іншій вкладці, щоб протестувати.
+  </div>
+
+  <div class="stats">
+    <div class="stat"><div class="v" id="sStudents">0</div><div class="k">учасників</div></div>
+    <div class="live" id="live"><span class="dot"></span><span id="liveText">—</span></div>
+  </div>
+
+  <div class="tabs" role="tablist" id="tabs">
+    <button class="tab" role="tab" data-tab="tot">This or That <span class="n" id="nTot">0</span></button>
+    <button class="tab" role="tab" data-tab="budget">Employability Budget <span class="n" id="nBudget">0</span></button>
+    <button class="tab" role="tab" data-tab="case">Make the Case <span class="n" id="nCase">0</span></button>
+    <button class="tab" role="tab" data-tab="invest">£10K Challenge <span class="n" id="nInvest">0</span></button>
+  </div>
+
+  <section id="p-tot" role="tabpanel"></section>
+  <section id="p-budget" role="tabpanel" hidden></section>
+  <section id="p-case" role="tabpanel" hidden></section>
+  <section id="p-invest" role="tabpanel" hidden></section>
+</div>
+
+<script src="config.js"></script>
+<script src="api.js"></script>
+<script>
+(function () {
+  const CFG = window.TOT_CONFIG, API = window.TOT_API;
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s == null ? "" : s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const money = (n) => CFG.invest.currency + Number(n).toLocaleString("en-GB");
+  let key = sessionStorage.getItem("tot_admin_key") || "";
+  let last = null, timer = null;
+  let tab = sessionStorage.getItem("tot_admin_tab") || "tot";
+  const open = new Set();              // which cards are expanded (survives auto-refresh)
+  const tablesOpen = new Set();
+
+  // ---------- auth / start ----------
+  function start() {
+    $("gate").hidden = true; $("app").hidden = false; $("demoNote").hidden = !API.isDemo;
+    selectTab(tab); load(); schedule();
+  }
+  if (API.isDemo || key) start(); else $("gate").hidden = false;
+  $("gateForm").addEventListener("submit", async (e) => {
+    e.preventDefault(); key = $("keyInput").value; $("gateErr").textContent = "Перевіряю…";
+    try { await API.results(key); sessionStorage.setItem("tot_admin_key", key); $("gateErr").textContent = ""; start(); }
+    catch (err) { $("gateErr").textContent = /wrong key/.test(err.message) ? "Невірний пароль" : "Помилка з'єднання: " + err.message; }
+  });
+
+  // ---------- tabs & controls ----------
+  function selectTab(t) {
+    tab = t; sessionStorage.setItem("tot_admin_tab", t);
+    document.querySelectorAll(".tab").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.tab === t)));
+    ["tot", "budget", "case", "invest"].forEach((x) => ($("p-" + x).hidden = x !== t));
+  }
+  $("tabs").addEventListener("click", (e) => { const b = e.target.closest(".tab"); if (b) selectTab(b.dataset.tab); });
+  function schedule() {
+    clearInterval(timer);
+    if ($("auto").checked) timer = setInterval(load, CFG.ADMIN_REFRESH_MS || 4000);
+    $("live").classList.toggle("paused", !$("auto").checked);
+  }
+  $("auto").addEventListener("change", schedule);
+  $("refresh").addEventListener("click", load);
+  $("allOpen").addEventListener("change", (e) => document.body.classList.toggle("all-open", e.target.checked));
+  window.addEventListener("storage", (e) => { if (API.isDemo && e.key === "tot_demo_db2") load(); });
+
+  // expand / collapse cards; toggle tables
+  document.addEventListener("click", (e) => {
+    const tb = e.target.closest("[data-table]");
+    if (tb) { const id = tb.dataset.table; tablesOpen.has(id) ? tablesOpen.delete(id) : tablesOpen.add(id); render(); return; }
+    const card = e.target.closest(".card[data-open]");
+    if (!card || e.target.closest(".more")) return;
+    const id = card.dataset.open; open.has(id) ? open.delete(id) : open.add(id);
+    card.classList.toggle("open", open.has(id));
+  });
+
+  async function load() {
+    try {
+      last = await API.results(key); render();
+      $("live").classList.remove("err");
+      $("liveText").textContent = "оновлено " + new Date().toLocaleTimeString("uk-UA");
+    } catch (err) {
+      $("live").classList.add("err");
+      const wrong = /wrong key/.test(err.message);
+      $("liveText").textContent = wrong ? "невірний пароль — перезавантажте сторінку" : "немає з'єднання, пробую ще…";
+      if (wrong) { sessionStorage.removeItem("tot_admin_key"); clearInterval(timer); }
+    }
+  }
+
+  // ---------- data model ----------
+  function people() {
+    const m = new Map();
+    const get = (id, nm) => { if (!m.has(id)) m.set(id, { id, name: nm, tot: {}, budget: null, case: null, invest: null }); return m.get(id); };
+    (last.students || []).forEach((s) => get(s.clientId, s.name));
+    (last.responses || []).forEach((r) => {
+      const p = get(r.clientId, r.name); if (r.name) p.name = r.name;
+      let v = r.value; try { if (r.activity !== "tot") v = JSON.parse(r.value); } catch (e) { return; }
+      if (r.activity === "tot") p.tot[r.key] = v;
+      else if (r.activity === "budget") p.budget = v;
+      else if (r.activity === "case") p.case = v;
+      else if (r.activity === "invest") p.invest = Array.isArray(v) ? v : [];
+    });
+    return [...m.values()].sort((a, b) => String(a.name).localeCompare(String(b.name), "uk"));
+  }
+  const cardOpen = (id) => (open.has(id) ? " open" : "");
+  const tableBtn = (id, label) => '<button class="btn tablebtn" type="button" data-table="' + id + '">' + (tablesOpen.has(id) ? "Сховати таблицю" : label) + "</button>";
+  const empty = (t) => '<div class="empty">' + t + "</div>";
+
+  function render() {
+    if (!last) return;
+    const list = people();
+    $("sStudents").textContent = list.length;
+    renderTot(list); renderBudget(list); renderCase(list); renderInvest(list);
+  }
+
+  // ---------- This or That ----------
+  function renderTot(list) {
+    const P = CFG.tot.pairs;
+    const answered = list.filter((p) => Object.keys(p.tot).length);
+    $("nTot").textContent = list.filter((p) => P.every((q) => p.tot[q.id])).length + "/" + list.length;
+    if (!answered.length) { $("p-tot").innerHTML = empty("Поки ніхто не голосував."); return; }
+    let h = '<p class="hint">Натисніть на пару, щоб побачити, хто що обрав.</p><div class="grid">';
+    P.forEach((q) => {
+      const A = list.filter((p) => p.tot[q.id] === "a"), Bv = list.filter((p) => p.tot[q.id] === "b"), t = A.length + Bv.length;
+      const pa = t ? Math.round((A.length / t) * 100) : 0, pb = t ? 100 - pa : 0;
+      h += '<div class="card' + cardOpen("tot" + q.id) + '" data-open="tot' + q.id + '">' +
+        '<div class="row2"><div class="side">' + esc(q.a) + " <small>" + A.length + '</small></div><div class="side b"><small>' + Bv.length + "</small> " + esc(q.b) + "</div></div>" +
+        '<div class="bar">' + (A.length ? '<span class="a" style="flex-basis:' + pa + '%">' + (pa >= 8 ? pa + "%" : "") + "</span>" : "") + (Bv.length ? '<span class="b" style="flex-basis:' + pb + '%">' + (pb >= 8 ? pb + "%" : "") + "</span>" : "") + "</div>" +
+        '<div class="more"><div class="names"><div>' + A.map((p) => '<span class="chip a">' + esc(p.name) + "</span>").join("") +
+        '</div><div class="b">' + Bv.map((p) => '<span class="chip b">' + esc(p.name) + "</span>").join("") + "</div></div></div></div>";
+    });
+    h += "</div>" + tableBtn("tot", "Таблиця по студентах");
+    if (tablesOpen.has("tot")) {
+      h += '<div class="twrap"><table><tr><th>Ім\'я</th>' + P.map((q, i) => '<th title="' + esc(q.a + " / " + q.b) + '">' + (i + 1) + ". " + esc(q.a.split(" ")[0]) + " / " + esc(q.b.split(/[ ,]/)[0]) + "</th>").join("") + "</tr>" +
+        list.map((p) => "<tr><td class='name'>" + esc(p.name) + "</td>" + P.map((q) => { const c = p.tot[q.id]; return c ? '<td><span class="chip ' + c + '">' + esc(c === "a" ? q.a : q.b) + "</span></td>" : '<td class="none">—</td>'; }).join("") + "</tr>").join("") + "</table></div>";
+    }
+    $("p-tot").innerHTML = h;
+  }
+
+  // ---------- Employability Budget ----------
+  function renderBudget(list) {
+    const B = CFG.budget, done = list.filter((p) => p.budget);
+    $("nBudget").textContent = done.length + "/" + list.length;
+    if (!done.length) { $("p-budget").innerHTML = empty("Поки ніхто не надіслав бюджет."); return; }
+    const sum = API.budgetSummary(done.map((p) => ({ activity: "budget", key: "alloc", value: p.budget })));
+    const rows = B.assets.map((a) => Object.assign({ id: a.id, label: a.label }, sum.assets[a.id] || { avg: 0, min: 0, max: 0, sd: 0 })).sort((x, y) => y.avg - x.avg);
+    const top = Math.max(1, ...rows.map((r) => r.avg)), divided = rows.slice().sort((x, y) => y.sd - x.sd)[0];
+    let h = '<p class="hint">Середні бали групи (це ж бачать студенти на слайді рейтингу, без імен). Натисніть на рядок, щоб побачити бали кожного.</p>' +
+      '<div class="hl"><div><small>Найбільше балів</small><b>' + esc(rows[0].label) + "</b></div><div><small>Найменше балів</small><b>" + esc(rows[rows.length - 1].label) +
+      "</b></div><div><small>Найбільше розходжень</small><b>" + esc(divided.label) + '</b> <span class="muted">(' + divided.min + "–" + divided.max + ")</span></div></div><div class='grid'>";
+    rows.forEach((r, i) => {
+      const who = done.map((p) => ({ name: p.name, v: Number(p.budget[r.id] || 0) })).sort((a, b) => b.v - a.v);
+      h += '<div class="card' + cardOpen("b" + r.id) + '" data-open="b' + r.id + '"><div class="rk"><span class="no">' + (i + 1) + '</span><span class="lb">' + esc(r.label) +
+        '</span><span class="hbar"><i style="width:' + (r.avg / top) * 100 + '%"></i></span><span class="vv"><b>' + r.avg + "</b> сер. · " + r.min + "–" + r.max + "</span></div>" +
+        '<div class="more"><div class="names" style="grid-template-columns:1fr"><div>' + who.map((w) => '<span class="chip a">' + esc(w.name) + " <b>" + w.v + "</b></span>").join("") + "</div></div></div></div>";
+    });
+    h += "</div>" + tableBtn("budget", "Таблиця по студентах");
+    if (tablesOpen.has("budget")) {
+      h += '<div class="twrap"><table><tr><th>Ім\'я</th>' + B.assets.map((a) => "<th>" + esc(a.label) + "</th>").join("") + "</tr>" +
+        list.map((p) => "<tr><td class='name'>" + esc(p.name) + "</td>" + B.assets.map((a) => p.budget ? "<td class='num'>" + Number(p.budget[a.id] || 0) + "</td>" : "<td class='none'>—</td>").join("") + "</tr>").join("") + "</table></div>";
+    }
+    $("p-budget").innerHTML = h;
+  }
+
+  // ---------- Make the Case ----------
+  function renderCase(list) {
+    const C = CFG.case, done = list.filter((p) => p.case && p.case.s);
+    const exprName = (id) => (C.expressions.find((x) => x.id === id) || { text: id }).text;
+    $("nCase").textContent = done.length + "/" + list.length;
+    if (!done.length) { $("p-case").innerHTML = empty("Поки ніхто не обрав твердження."); return; }
+    let h = '<p class="hint">Хто яке твердження обрав і з якою позицією. Натисніть, щоб побачити імена й вирази.</p><div class="grid">';
+    C.statements.forEach((s) => {
+      const ps = done.filter((p) => p.case.s === s.id), f = ps.filter((p) => p.case.side === "for").length, a = ps.filter((p) => p.case.side === "against").length, n = ps.length - f - a;
+      const pct = (x) => (ps.length ? (x / ps.length) * 100 : 0);
+      h += '<div class="card' + cardOpen("c" + s.id) + '" data-open="c' + s.id + '"><div class="row2"><div class="side">' + esc(s.text) + '</div><div class="side b"><small>' + ps.length + " обрали · " + f + " for · " + a + " against</small></div></div>" +
+        '<div class="bar">' + (f ? '<span class="for" style="flex-basis:' + pct(f) + '%">For ' + f + "</span>" : "") + (n ? '<span class="none" style="flex-basis:' + pct(n) + '%" title="позиція не обрана">? ' + n + "</span>" : "") + (a ? '<span class="against" style="flex-basis:' + pct(a) + '%">Against ' + a + "</span>" : "") + "</div>" +
+        '<div class="more"><div class="plist">' + (ps.length ? ps.map((p) => "<div><b>" + esc(p.name) + "</b>" +
+          (p.case.side === "for" ? '<span class="chip g">for</span>' : p.case.side === "against" ? '<span class="chip r">against</span>' : '<span class="chip n">позиція не обрана</span>') +
+          '<span class="muted">' + (p.case.expr || []).map(exprName).map(esc).join(", ") + "</span></div>").join("") : '<span class="muted">Ніхто</span>') + "</div></div></div>";
+    });
+    h += "</div><h3>Які вирази плануюють використати</h3><div class='grid'><div class='card' style='cursor:auto'><div style='display:flex;flex-wrap:wrap;gap:6px'>" +
+      C.expressions.map((x) => ({ x, n: done.filter((p) => (p.case.expr || []).includes(x.id)).length })).sort((a, b) => b.n - a.n)
+        .map((o) => '<span class="chip ' + (o.n ? "b" : "n") + '">' + esc(o.x.text) + " · <b>" + o.n + "</b></span>").join("") + "</div></div></div>";
+    h += tableBtn("case", "Таблиця по студентах");
+    if (tablesOpen.has("case")) {
+      h += '<div class="twrap"><table><tr><th>Ім\'я</th><th>Твердження</th><th>Позиція</th><th>Вирази</th></tr>' +
+        list.map((p) => { const c = p.case; if (!c || !c.s) return "<tr><td class='name'>" + esc(p.name) + "</td><td class='none' colspan='3'>—</td></tr>";
+          const st = C.statements.find((s) => s.id === c.s);
+          return "<tr><td class='name'>" + esc(p.name) + "</td><td>" + esc(st ? st.text : c.s) + "</td><td>" + esc(c.side || "—") + "</td><td>" + (c.expr || []).map(exprName).map(esc).join(", ") + " <span class='muted'>(" + (c.expr || []).length + ")</span></td></tr>"; }).join("") + "</table></div>";
+    }
+    $("p-case").innerHTML = h;
+  }
+
+  // ---------- £10K ----------
+  function renderInvest(list) {
+    const I = CFG.invest, done = list.filter((p) => p.invest);
+    const price = (id) => (I.options.find((o) => o.id === id) || { price: 0 }).price;
+    const total = (p) => p.invest.reduce((s, id) => s + price(id), 0);
+    $("nInvest").textContent = done.length + "/" + list.length;
+    if (!done.length) { $("p-invest").innerHTML = empty("Поки ніхто не склав план."); return; }
+    const avg = Math.round(done.reduce((s, p) => s + total(p), 0) / done.length);
+    const combos = {}; done.forEach((p) => { const k = p.invest.slice().sort().join("+"); if (k) combos[k] = (combos[k] || 0) + 1; });
+    const best = Object.entries(combos).sort((a, b) => b[1] - a[1])[0];
+    const optName = (id) => (I.options.find((o) => o.id === id) || { name: id }).name;
+    let h = '<p class="hint">Скільки студентів додали кожну опцію до плану. Натисніть, щоб побачити імена.</p>' +
+      '<div class="hl"><div><small>Середні витрати</small><b>' + money(avg) + '</b></div><div><small>Використали весь бюджет</small><b>' + done.filter((p) => total(p) === I.budget).length + " / " + done.length +
+      "</b></div><div><small>Найпопулярніший план</small><b>" + (best ? esc(best[0].split("+").map(optName).join(" + ")) + ' <span class="muted">(' + best[1] + ")</span>" : "—") + "</b></div></div><div class='grid'>";
+    I.options.map((o) => ({ o, ps: done.filter((p) => p.invest.includes(o.id)) })).sort((a, b) => b.ps.length - a.ps.length).forEach(({ o, ps }, i) => {
+      h += '<div class="card' + cardOpen("i" + o.id) + '" data-open="i' + o.id + '"><div class="rk"><span class="no">' + (i + 1) + '</span><span class="lb">' + esc(o.name) + ' <span class="muted">' + money(o.price) +
+        '</span></span><span class="hbar"><i style="width:' + (ps.length / done.length) * 100 + '%"></i></span><span class="vv"><b>' + ps.length + "</b> / " + done.length + "</span></div>" +
+        '<div class="more"><div class="names" style="grid-template-columns:1fr"><div>' + (ps.length ? ps.map((p) => '<span class="chip a">' + esc(p.name) + "</span>").join("") : '<span class="muted">Ніхто</span>') + "</div></div></div></div>";
+    });
+    h += "</div>" + tableBtn("invest", "Плани по студентах");
+    if (tablesOpen.has("invest")) {
+      h += '<div class="twrap"><table><tr><th>Ім\'я</th><th>План</th><th>Сума</th></tr>' +
+        list.map((p) => p.invest ? "<tr><td class='name'>" + esc(p.name) + "</td><td>" + (p.invest.length ? p.invest.map((id) => '<span class="chip b">' + esc(optName(id)) + "</span>").join(" ") : "<span class='muted'>порожній</span>") +
+          "</td><td class='num'>" + money(total(p)) + "</td></tr>" : "<tr><td class='name'>" + esc(p.name) + "</td><td class='none' colspan='2'>—</td></tr>").join("") + "</table></div>";
+    }
+    $("p-invest").innerHTML = h;
+  }
+
+  // ---------- CSV (one row per student, all activities) ----------
+  $("csv").addEventListener("click", () => {
+    if (!last) return;
+    const q = (s) => '"' + String(s == null ? "" : s).replace(/"/g, '""') + '"';
+    const T = CFG.tot.pairs, B = CFG.budget.assets, C = CFG.case, I = CFG.invest;
+    const head = ["Name", ...T.map((p) => "ToT: " + p.a + " / " + p.b), ...B.map((a) => "Budget: " + a.label), "Case: statement", "Case: position", "Case: expressions", "£10K: plan", "£10K: total"];
+    const lines = [head.map(q).join(",")];
+    people().forEach((p) => {
+      const st = p.case && C.statements.find((s) => s.id === p.case.s);
+      lines.push([
+        p.name,
+        ...T.map((x) => (p.tot[x.id] === "a" ? x.a : p.tot[x.id] === "b" ? x.b : "")),
+        ...B.map((a) => (p.budget ? Number(p.budget[a.id] || 0) : "")),
+        st ? st.text : "", p.case ? p.case.side || "" : "",
+        p.case ? (p.case.expr || []).map((id) => (C.expressions.find((x) => x.id === id) || { text: id }).text).join("; ") : "",
+        p.invest ? p.invest.map((id) => (I.options.find((o) => o.id === id) || { name: id }).name).join("; ") : "",
+        p.invest ? p.invest.reduce((s, id) => s + (I.options.find((o) => o.id === id) || { price: 0 }).price, 0) : ""
+      ].map(q).join(","));
+    });
+    const blob = new Blob(["﻿" + lines.join("\n")], { type: "text/csv;charset=utf-8" });
+    const a = document.createElement("a"); a.href = URL.createObjectURL(blob);
+    a.download = "degree-or-certificate-" + new Date().toISOString().slice(0, 16).replace(/[:T]/g, "-") + ".csv";
+    a.click(); URL.revokeObjectURL(a.href);
+  });
+
+  $("reset").addEventListener("click", async () => {
+    if (!confirm("Видалити всі відповіді та список учасників? Це не можна скасувати.")) return;
+    try { await API.post({ action: "reset", key }); open.clear(); load(); }
+    catch (err) { alert("Не вдалося очистити: " + err.message); }
+  });
+})();
+</script>
+</body>
+</html>

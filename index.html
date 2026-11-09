@@ -1,0 +1,753 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Degree or Certificate? — ENG HUB</title>
+<link rel="stylesheet" href="styles.css">
+<style>
+  .screen { position: absolute; inset: 0; }
+  .abs { position: absolute; }
+  .s-title { top: 18px; left: 0; right: 0; text-align: center; margin: 0; font-size: 104px; line-height: 1; }
+  .s-instr { top: 112px; left: 50%; transform: translateX(-50%); width: 1080px; margin: 0; text-align: center; font-size: 22px; font-weight: 700; line-height: 1.45; }
+  .hand { font-family: "Caveat", cursive; }
+  .label-sm { font-size: 17px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--muted); margin: 0 0 8px; }
+  .btn-primary {
+    border: 0; border-radius: 14px; padding: 12px 24px; font-size: 21px; font-weight: 800;
+    background: var(--pink); color: #fff; transition: transform .12s, background .12s;
+  }
+  .btn-primary:hover { background: #e01f8c; }
+  .btn-primary:active { transform: scale(.97); }
+  .btn-primary:disabled { background: #e7c3d8; cursor: not-allowed; transform: none; }
+  .btn-ghost { border: 2px solid var(--line); background: #fff; border-radius: 12px; padding: 8px 16px; font-size: 18px; font-weight: 700; }
+  .btn-ghost:hover { border-color: var(--purple); }
+
+  /* ---------- JOIN ---------- */
+  .join-title { left: 112px; top: 210px; margin: 0; font-size: 168px; line-height: .9; }
+  .join-form { left: 116px; top: 540px; width: 520px; }
+  .join-form label { display: block; font-size: 22px; font-weight: 700; margin-bottom: 10px; }
+  .join-row { display: flex; gap: 12px; }
+  .join-row input {
+    flex: 1; min-width: 0; font: inherit; font-size: 24px; padding: 14px 18px;
+    border: 2px solid var(--line); border-radius: 14px; background: var(--card); color: var(--ink);
+  }
+  .join-row input:focus { border-color: var(--pink); outline: none; }
+  .join-hint { margin-top: 10px; font-size: 18px; color: var(--muted); min-height: 1.2em; }
+  .girl { left: 1044px; top: 70px; width: 320px; }
+  .guy  { left: 668px; top: 405px; width: 372px; }
+
+  /* ---------- FOOTER / NAV ---------- */
+  .foot {
+    position: absolute; left: 0; right: 0; bottom: 0; height: 60px; padding: 0 22px;
+    display: grid; grid-template-columns: 1fr auto 1fr; align-items: center; gap: 12px;
+    font-size: 18px; color: var(--muted); border-top: 1px solid #f3eef5; background: #fff; z-index: 5;
+  }
+  .foot b { color: var(--ink); }
+  .foot .who { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+  .foot .right { display: flex; gap: 10px; justify-content: flex-end; align-items: center; }
+  .dots { display: flex; gap: 8px; }
+  .dots button { width: 12px; height: 12px; padding: 0; border-radius: 50%; border: 0; background: var(--line); }
+  .dots button.on { background: var(--pink); width: 30px; border-radius: 6px; }
+  .navbtn { border: 2px solid var(--line); background: #fff; border-radius: 999px; height: 40px; min-width: 44px; padding: 0 16px; font-size: 18px; font-weight: 800; }
+  .navbtn.next { background: var(--ink); color: #fff; border-color: var(--ink); }
+  .navbtn:disabled { opacity: .3; cursor: default; }
+  .sync { font-weight: 700; font-size: 16px; }
+  .sync.ok { color: var(--ok); } .sync.wait { color: var(--muted); } .sync.err { color: var(--warn); }
+  .link { background: none; border: 0; padding: 0; color: var(--purple); text-decoration: underline; font-size: inherit; }
+  .demo-badge { font-size: 13px; font-weight: 700; background: #fff4d6; color: #8a5a00; padding: 3px 9px; border-radius: 999px; margin-left: 8px; vertical-align: middle; }
+
+  /* ---------- SLIDE: THIS OR THAT ---------- */
+  .book { left: 76px; top: 196px; width: 212px; }
+  .walker { left: 1148px; top: 318px; width: 184px; }
+  .pairs { top: 198px; left: 50%; transform: translateX(-50%); width: 820px; display: grid; gap: 7px; margin: 0; padding: 0; list-style: none; }
+  .pair { display: grid; grid-template-columns: minmax(0,1fr) 84px minmax(0,1fr); gap: 56px; }
+  .opt {
+    min-height: 63px; border: 2px solid transparent; border-radius: 6px; background: var(--card);
+    font-size: 22px; padding: 8px 40px; position: relative;
+    transition: background .15s, color .15s, opacity .15s, border-color .15s, transform .1s;
+  }
+  .opt:hover { border-color: var(--pink-soft); }
+  .opt:active { transform: scale(.98); }
+  .opt[aria-pressed="true"] { background: var(--pink); color: #fff; font-weight: 700; border-color: var(--pink); }
+  .opt[aria-pressed="true"]::after { content: "✓"; position: absolute; right: 14px; top: 50%; transform: translateY(-50%); font-size: 20px; }
+  .pair.chosen .opt[aria-pressed="false"] { opacity: .5; }
+  .or { display: grid; place-items: center; background: var(--card); border-radius: 6px; font-size: 20px; }
+  .tot-hint { top: 696px; left: 50%; transform: translateX(-50%); font-size: 19px; font-weight: 700; color: var(--muted); white-space: nowrap; padding: 6px 18px; border-radius: 999px; }
+  .tot-hint.done { background: var(--pink-pale); color: #8a1459; }
+
+  /* ---------- SLIDE: BUDGET ---------- */
+  .b-instr { width: 1150px; font-size: 20px; }
+  .b-table { left: 104px; top: 214px; width: 650px; display: grid; gap: 7px; }
+  .b-row { display: grid; grid-template-columns: minmax(0,1fr) 250px; gap: 12px; }
+  .b-row > * { background: var(--card); border-radius: 6px; min-height: 64px; display: flex; align-items: center; }
+  .b-row .lbl { padding: 0 20px; font-size: 22px; }
+  .b-row.head > * { min-height: 54px; font-weight: 700; font-size: 21px; }
+  .b-row.head .me { justify-content: center; }
+  .stepper { justify-content: center; gap: 8px; }
+  .stepper button { width: 44px; height: 44px; border-radius: 50%; border: 2px solid var(--line); background: #fff; font-size: 24px; font-weight: 800; line-height: 1; }
+  .stepper button:hover:not(:disabled) { border-color: var(--pink); color: var(--pink); }
+  .stepper button:disabled { opacity: .3; cursor: default; }
+  .stepper input { width: 78px; height: 46px; text-align: center; font: inherit; font-size: 26px; font-weight: 800; border: 2px solid transparent; border-radius: 10px; background: #fff; color: var(--ink); -moz-appearance: textfield; }
+  .stepper input::-webkit-outer-spin-button, .stepper input::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+  .stepper input:focus { outline: none; border-color: var(--pink); }
+  .b-row.has .stepper input { color: var(--pink); }
+  .b-qs { left: 820px; top: 210px; width: 590px; margin: 0; padding-left: 22px; font-size: 27px; line-height: 1.22; }
+  .b-qs li { margin-bottom: 4px; }
+  .b-total { left: 820px; top: 478px; width: 340px; background: var(--card); border-radius: 18px; padding: 18px 22px; }
+  .b-total .num { font-family: "Bebas Neue", sans-serif; font-size: 64px; line-height: 1; }
+  .b-total .num small { font-size: 34px; color: var(--muted); }
+  .meter { height: 10px; border-radius: 5px; background: #fff; overflow: hidden; margin: 8px 0 8px; }
+  .meter i { display: block; height: 100%; width: 0; background: var(--purple); transition: width .2s, background .2s; }
+  .b-total.full .meter i { background: var(--ok); }
+  .b-total.over .meter i { background: var(--warn); }
+  .b-msg { font-size: 18px; font-weight: 700; min-height: 24px; color: var(--muted); }
+  .b-total.full .b-msg { color: var(--ok); } .b-total.over .b-msg { color: var(--warn); }
+  .b-actions { display: flex; gap: 10px; margin-top: 12px; flex-wrap: wrap; }
+  .pen { left: 1190px; top: 500px; width: 196px; }
+
+  /* ---------- SLIDE: RANKING ---------- */
+  .r-sub { top: 116px; left: 0; right: 0; text-align: center; font-size: 21px; color: var(--muted); margin: 0; }
+  .r-list { top: 170px; left: 50%; transform: translateX(-50%); width: 1100px; display: grid; gap: 8px; margin: 0; padding: 0; list-style: none; }
+  .r-row { display: grid; grid-template-columns: 64px 290px minmax(0,1fr) 170px; align-items: center; gap: 16px; background: var(--card); border-radius: 10px; min-height: 60px; padding: 0 18px; }
+  .r-rank { font-family: "Bebas Neue", sans-serif; font-size: 42px; color: var(--pink); line-height: 1; }
+  .r-lbl { font-size: 23px; font-weight: 700; }
+  .r-bar { position: relative; height: 22px; background: #fff; border-radius: 11px; }
+  .r-bar i { position: absolute; left: 0; top: 0; bottom: 0; border-radius: 11px; background: var(--pink); transition: width .5s ease; }
+  .r-bar u { position: absolute; top: -6px; bottom: -6px; width: 4px; margin-left: -2px; background: var(--ink); border-radius: 2px; transition: left .5s ease; }
+  .r-val { text-align: right; line-height: 1.1; }
+  .r-val b { font-size: 26px; }
+  .r-val span { display: block; font-size: 16px; color: var(--muted); }
+  .r-hl { top: 580px; left: 50%; transform: translateX(-50%); width: 1100px; display: grid; grid-template-columns: repeat(3, 1fr); gap: 14px; }
+  .r-hl div { border-radius: 14px; padding: 12px 18px; background: var(--purple-pale); }
+  .r-hl small { display: block; font-size: 15px; font-weight: 800; text-transform: uppercase; letter-spacing: .06em; color: #5e2a78; }
+  .r-hl b { font-size: 23px; }
+  .r-prompt { top: 682px; left: 0; right: 0; text-align: center; font-size: 32px; margin: 0; }
+  .r-legend { font-size: 16px; color: var(--muted); }
+  .r-legend u { display: inline-block; width: 4px; height: 16px; background: var(--ink); vertical-align: middle; margin: 0 4px; border-radius: 2px; }
+  .gate { top: 220px; left: 50%; transform: translateX(-50%); width: 640px; text-align: center; background: var(--card); border-radius: 22px; padding: 36px; }
+  .gate h2 { font-family: "Bebas Neue", sans-serif; font-weight: 400; font-size: 46px; margin: 0 0 8px; }
+  .gate p { font-size: 21px; margin: 0 0 20px; }
+
+  /* ---------- SLIDE: MAKE THE CASE ---------- */
+  .c-instr { top: 104px; width: 1160px; font-size: 20px; }
+  .c-chips { top: 206px; left: 70px; right: 70px; display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; }
+  .chip-x { display: inline-flex; align-items: stretch; border-radius: 6px; background: var(--card); border: 2px solid transparent; }
+  .chip-x.on { background: var(--pink); border-color: var(--pink); color: #fff; }
+  .chip-x .t { border: 0; background: none; font-size: 21px; padding: 10px 6px 10px 18px; color: inherit; }
+  .chip-x .q { border: 0; background: none; width: 36px; font-size: 16px; font-weight: 800; color: var(--purple); }
+  .chip-x.on .q { color: #fff; }
+  .chip-x:hover { border-color: var(--pink-soft); }
+  .c-meaning { top: 384px; left: 50%; transform: translateX(-50%); width: 1100px; text-align: center; font-size: 20px; color: var(--muted); min-height: 36px; }
+  .c-meaning.show span { background: var(--purple-pale); color: #4b1f62; padding: 5px 16px; border-radius: 999px; display: inline-block; }
+  .c-left { left: 104px; top: 436px; width: 700px; }
+  .c-stmts { display: grid; gap: 6px; }
+  .stmt { text-align: left; border: 2px solid transparent; background: var(--card); border-radius: 8px; padding: 9px 16px 9px 44px; font-size: 21px; position: relative; }
+  .stmt::before { content: ""; position: absolute; left: 14px; top: 50%; width: 18px; height: 18px; margin-top: -9px; border-radius: 50%; border: 2px solid #cbbfd2; background: #fff; }
+  .stmt:hover { border-color: var(--pink-soft); }
+  .stmt[aria-checked="true"] { border-color: var(--pink); background: var(--pink-pale); font-weight: 700; }
+  .stmt[aria-checked="true"]::before { border-color: var(--pink); background: var(--pink); box-shadow: inset 0 0 0 3px #fff; }
+  .c-right { left: 860px; top: 436px; width: 480px; }
+  .sides { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 16px; }
+  .side-btn { border: 2px solid var(--line); background: #fff; border-radius: 10px; padding: 9px; font-size: 21px; font-weight: 800; }
+  .side-btn[aria-pressed="true"].for { background: var(--ok); border-color: var(--ok); color: #fff; }
+  .side-btn[aria-pressed="true"].against { background: var(--warn); border-color: var(--warn); color: #fff; }
+  .c-count { font-size: 19px; margin: 0 0 14px; }
+  .c-count b.ok { color: var(--ok); }
+  .timer { display: flex; align-items: center; gap: 16px; background: var(--card); border-radius: 16px; padding: 10px 18px; }
+  .timer .t { font-family: "Bebas Neue", sans-serif; font-size: 62px; line-height: 1; min-width: 104px; }
+  .timer.running .t { color: var(--pink); }
+  .timer.end .t { color: var(--warn); animation: pulse .6s ease-in-out 3; }
+  .timer small { display: block; font-size: 16px; color: var(--muted); }
+  @keyframes pulse { 50% { transform: scale(1.12); } }
+
+  /* ---------- SLIDE: £10K ---------- */
+  .i-instr { top: 108px; width: 1100px; }
+  .info-btn { top: 38px; right: 44px; width: 48px; height: 48px; border-radius: 50%; border: 0; background: var(--ink); color: #fff; font: 800 24px/1 Georgia, serif; }
+  .i-panel { top: 182px; left: 60px; width: 1320px; height: 490px; background: var(--cream); border-radius: 26px; padding: 26px 34px 0; }
+  .i-cards { display: grid; grid-template-columns: repeat(6, 1fr); gap: 18px; }
+  .i-col { display: flex; flex-direction: column; gap: 10px; }
+  .flip { perspective: 900px; height: 300px; }
+  .flip-in { position: relative; width: 100%; height: 100%; transition: transform .5s; transform-style: preserve-3d; }
+  .flip.back .flip-in { transform: rotateY(180deg); }
+  .face { position: absolute; inset: 0; backface-visibility: hidden; -webkit-backface-visibility: hidden; background: var(--rose); border-radius: 16px; overflow: hidden; display: flex; flex-direction: column; align-items: center; text-align: center; padding: 18px 12px 0; }
+  .face.b { transform: rotateY(180deg); justify-content: center; padding: 18px 22px 40px; font-size: 21px; font-weight: 700; line-height: 1.3; color: #3b2525; }
+  .face .nm { font-size: 19px; font-weight: 800; text-transform: uppercase; letter-spacing: .03em; line-height: 1.1; min-height: 44px; display: flex; align-items: center; }
+  .face .pr { font-size: 20px; font-weight: 700; margin-top: 4px; }
+  .face img { max-width: 92%; max-height: 120px; margin-top: auto; margin-bottom: 52px; }
+  .flip-btn { position: absolute; right: 0; bottom: 0; width: 56px; height: 56px; border: 0; border-top-left-radius: 56px; background: var(--cocoa); color: #fff; font-size: 22px; padding: 10px 0 0 12px; z-index: 2; }
+  .flip-btn:hover { background: #6f5050; }
+  .add-btn { border: 2px solid var(--cocoa); background: #fff; color: var(--cocoa); border-radius: 12px; padding: 9px 4px; font-size: 18px; font-weight: 800; }
+  .add-btn[aria-pressed="true"] { background: var(--pink); border-color: var(--pink); color: #fff; }
+  .add-btn:disabled { opacity: .45; cursor: not-allowed; }
+  .i-col.in .flip .face { box-shadow: 0 0 0 4px var(--pink); }
+  .i-meter { margin-top: 22px; display: grid; grid-template-columns: auto 1fr auto; align-items: center; gap: 18px; font-size: 21px; }
+  .i-meter .bar { height: 16px; background: #fff; border-radius: 8px; overflow: hidden; }
+  .i-meter .bar i { display: block; height: 100%; width: 0; background: var(--pink); transition: width .3s; }
+  .i-meter b { font-size: 24px; }
+  .i-warn { color: var(--warn); font-weight: 800; }
+  .i-prompt { top: 684px; left: 0; right: 0; text-align: center; font-size: 30px; margin: 0; }
+  .modal { position: absolute; inset: 0; background: rgba(20, 10, 30, .45); display: grid; place-items: center; z-index: 10; }
+  .modal-box { background: #fff; border-radius: 18px; width: 560px; max-width: calc(100% - 28px); padding: 26px 30px; font-size: 20px; }
+  .modal-box h2 { margin: 0 0 10px; font-size: 24px; }
+  .modal-box ol { padding-left: 24px; margin: 0 0 18px; }
+  .modal-box li { margin-bottom: 6px; }
+  @keyframes shake { 25% { transform: translateX(-6px); } 75% { transform: translateX(6px); } }
+  .shake { animation: shake .25s 2; }
+
+  /* ---------- Phone / portrait ---------- */
+  body.flow .screen { position: static; }
+  body.flow .abs { position: static; transform: none; width: auto; margin-left: 14px; margin-right: 14px; }
+  body.flow .ill { display: none; }
+  body.flow .s-title { font-size: 60px; margin-top: 4px; margin-bottom: 6px; }
+  body.flow .s-instr { font-size: 17px; margin-bottom: 18px; }
+  body.flow .join-title { font-size: 72px; margin: 40px 20px 28px; }
+  body.flow .join-row input { font-size: 20px; }
+  body.flow .foot { position: fixed; height: auto; min-height: 56px; padding: 8px 12px; grid-template-columns: 1fr auto; font-size: 15px; box-shadow: 0 -4px 16px rgba(0,0,0,.06); }
+  body.flow .foot .dots { display: none; }
+  body.flow .foot .sync { font-size: 14px; }
+  body.flow .pairs { gap: 8px; }
+  body.flow .pair { grid-template-columns: minmax(0,1fr) 36px minmax(0,1fr); gap: 6px; }
+  body.flow .opt { font-size: 17px; min-height: 58px; padding: 6px 20px; }
+  body.flow .opt[aria-pressed="true"]::after { right: 6px; font-size: 15px; }
+  body.flow .or { font-size: 15px; }
+  body.flow .tot-hint { margin-top: 14px; text-align: center; white-space: normal; font-size: 16px; }
+  body.flow .b-row { grid-template-columns: minmax(0,1fr) 168px; gap: 6px; }
+  body.flow .b-row .lbl { font-size: 18px; padding: 0 12px; }
+  body.flow .stepper { gap: 4px; }
+  body.flow .stepper button { width: 38px; height: 38px; }
+  body.flow .stepper input { width: 56px; font-size: 22px; }
+  body.flow .b-total { margin-top: 14px; }
+  body.flow .b-qs { font-size: 24px; margin-top: 18px; padding-left: 36px; }
+  body.flow .r-sub { margin-bottom: 14px; font-size: 17px; }
+  body.flow .r-row { grid-template-columns: 34px minmax(0,1fr) auto; gap: 4px 10px; padding: 10px 12px; }
+  body.flow .r-rank { font-size: 32px; }
+  body.flow .r-lbl { font-size: 18px; }
+  body.flow .r-bar { grid-column: 1 / -1; grid-row: 2; }
+  body.flow .r-val b { font-size: 21px; }
+  body.flow .r-hl { grid-template-columns: 1fr; margin-top: 14px; gap: 8px; }
+  body.flow .r-hl b { font-size: 19px; }
+  body.flow .r-prompt, body.flow .i-prompt { font-size: 25px; margin-top: 14px; }
+  body.flow .gate { padding: 24px; }
+  body.flow .c-chips { justify-content: flex-start; gap: 6px; }
+  body.flow .chip-x .t { font-size: 16px; padding: 7px 4px 7px 12px; }
+  body.flow .chip-x .q { width: 30px; }
+  body.flow .c-meaning { margin-top: 10px; margin-bottom: 10px; font-size: 16px; }
+  body.flow .stmt { font-size: 17px; }
+  body.flow .c-right { margin-top: 16px; }
+  body.flow .info-btn { position: absolute; top: 14px; right: 14px; margin: 0; width: 40px; height: 40px; }
+  body.flow .i-panel { height: auto; padding: 14px 12px 16px; }
+  body.flow .i-cards { grid-template-columns: 1fr 1fr; gap: 12px; }
+  body.flow .flip { height: 250px; }
+  body.flow .face.b { font-size: 17px; padding: 12px 14px 40px; }
+  body.flow .face .nm { font-size: 15px; }
+  body.flow .face img { max-height: 90px; }
+  body.flow .i-meter { grid-template-columns: 1fr; gap: 6px; font-size: 17px; }
+</style>
+</head>
+<body>
+<div class="viewport">
+  <main class="stage" id="stage">
+    <img class="logo" src="img/logo.png" alt="ENG HUB">
+
+    <!-- ============ JOIN ============ -->
+    <section class="screen" id="join" hidden aria-labelledby="joinTitle">
+      <h1 class="abs join-title" id="joinTitle">Degree or<br>certificate?</h1>
+      <form class="abs join-form" id="joinForm" autocomplete="off">
+        <label for="nameInput">What’s your name?</label>
+        <div class="join-row">
+          <input id="nameInput" name="name" maxlength="60" placeholder="First name and surname" required>
+          <button class="btn-primary" type="submit">Start →</button>
+        </div>
+        <div class="join-hint" id="joinHint"></div>
+      </form>
+      <img class="abs ill girl" src="img/girl.png" alt="">
+      <img class="abs ill guy" src="img/guy.png" alt="">
+    </section>
+
+    <!-- ============ SLIDE 2: THIS OR THAT ============ -->
+    <section class="screen slide" id="s-tot" hidden>
+      <h1 class="abs s-title" data-t="tot.title"></h1>
+      <p class="abs s-instr" data-t="tot.instructions"></p>
+      <img class="abs ill book" src="img/book.png" alt="">
+      <img class="abs ill walker" src="img/student.png" alt="">
+      <ul class="abs pairs" id="pairs"></ul>
+      <div class="abs tot-hint" id="totHint" role="status"></div>
+    </section>
+
+    <!-- ============ SLIDE 3: BUDGET ============ -->
+    <section class="screen slide" id="s-budget" hidden>
+      <h1 class="abs s-title" data-t="budget.title"></h1>
+      <p class="abs s-instr b-instr" data-t="budget.instructions"></p>
+      <div class="abs b-table" id="bTable">
+        <div class="b-row head"><div class="lbl">Career assets</div><div class="me">My points</div></div>
+      </div>
+      <div class="abs b-total" id="bTotal">
+        <div class="label-sm">Total</div>
+        <div class="num"><span id="bSum">0</span><small> / 100</small></div>
+        <div class="meter"><i id="bMeter"></i></div>
+        <div class="b-msg" id="bMsg" aria-live="polite"></div>
+        <div class="b-actions">
+          <button class="btn-primary" id="bSubmit" type="button" disabled>Submit</button>
+          <button class="btn-ghost" id="bClear" type="button">Clear</button>
+        </div>
+      </div>
+      <ul class="abs b-qs hand" id="bQs"></ul>
+      <img class="abs ill pen" src="img/pen.png" alt="">
+    </section>
+
+    <!-- ============ GROUP RANKING ============ -->
+    <section class="screen slide" id="s-ranking" hidden>
+      <h1 class="abs s-title" data-t="budget.rankingTitle"></h1>
+      <div id="rGate" hidden>
+        <div class="abs gate">
+          <h2>Submit your budget first</h2>
+          <p>The group ranking opens after you divide your 100 points.</p>
+          <button class="btn-primary" type="button" data-go="budget">← Back to the budget</button>
+        </div>
+      </div>
+      <div id="rBody">
+        <p class="abs r-sub"><span id="rSub">Loading…</span> <span class="r-legend">· <u></u> = you</span></p>
+        <ol class="abs r-list" id="rList"></ol>
+        <div class="abs r-hl" id="rHl"></div>
+        <p class="abs r-prompt hand" data-t="budget.rankingPrompt"></p>
+      </div>
+    </section>
+
+    <!-- ============ SLIDE 8: MAKE THE CASE ============ -->
+    <section class="screen slide" id="s-case" hidden>
+      <h1 class="abs s-title" data-t="case.title"></h1>
+      <p class="abs s-instr c-instr" data-t="case.instructions"></p>
+      <div class="abs c-chips" id="cChips"></div>
+      <div class="abs c-meaning" id="cMeaning" aria-live="polite"><span>Tap <b>?</b> to check what an expression means. Tap the expression to pick it for your argument.</span></div>
+      <div class="abs c-left">
+        <p class="label-sm">1 · Choose a statement</p>
+        <div class="c-stmts" id="cStmts" role="radiogroup"></div>
+      </div>
+      <div class="abs c-right">
+        <p class="label-sm">2 · Your position</p>
+        <div class="sides">
+          <button type="button" class="side-btn for" data-side="for" aria-pressed="false">For 👍</button>
+          <button type="button" class="side-btn against" data-side="against" aria-pressed="false">Against 👎</button>
+        </div>
+        <p class="label-sm">3 · Expressions you’ll use</p>
+        <p class="c-count" id="cCount"></p>
+        <div class="timer" id="timer">
+          <div class="t" id="tVal">0:30</div>
+          <div><small>Present your argument</small>
+            <button class="btn-primary" id="tStart" type="button">Start</button>
+            <button class="btn-ghost" id="tReset" type="button">Reset</button>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ SLIDE 9: £10K ============ -->
+    <section class="screen slide" id="s-invest" hidden>
+      <h1 class="abs s-title" data-t="invest.title"></h1>
+      <button class="abs info-btn" id="howBtn" type="button" aria-label="How to play">i</button>
+      <p class="abs s-instr i-instr" data-t="invest.instructions"></p>
+      <div class="abs i-panel">
+        <div class="i-cards" id="iCards"></div>
+        <div class="i-meter">
+          <span>Spent <b id="iSpent">£0</b> of <span id="iBudget"></span></span>
+          <div class="bar"><i id="iBar"></i></div>
+          <span id="iLeft"></span>
+        </div>
+      </div>
+      <p class="abs i-prompt hand">Explain your plan with at least 3 target expressions. Why did you reject the others?</p>
+      <div class="modal" id="howModal" hidden role="dialog" aria-modal="true" aria-labelledby="howTitle">
+        <div class="modal-box">
+          <h2 id="howTitle">HOW TO PLAY</h2>
+          <ol id="howList"></ol>
+          <button class="btn-primary" id="howClose" type="button">Got it</button>
+        </div>
+      </div>
+    </section>
+
+    <!-- ============ FOOTER ============ -->
+    <footer class="foot" id="foot" hidden>
+      <div class="who">Hi, <b id="whoName"></b> · <button class="link" id="changeName" type="button">not you?</button><span class="demo-badge" id="demoBadge" hidden>DEMO</span></div>
+      <div class="dots" id="dots"></div>
+      <div class="right">
+        <span class="sync ok" id="sync" aria-live="polite"></span>
+        <button class="navbtn" id="prev" type="button" aria-label="Previous slide">←</button>
+        <button class="navbtn next" id="next" type="button">Next →</button>
+      </div>
+    </footer>
+  </main>
+</div>
+
+<script src="config.js"></script>
+<script src="api.js"></script>
+<script>
+(function () {
+  const CFG = window.TOT_CONFIG, API = window.TOT_API;
+  const $ = (id) => document.getElementById(id);
+  const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+  const store = {
+    get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch (e) { return d; } },
+    set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+  };
+
+  // static texts from config
+  document.querySelectorAll("[data-t]").forEach((el) => {
+    const [a, b] = el.dataset.t.split("."); el.textContent = CFG[a][b];
+  });
+
+  // ---------- identity ----------
+  let clientId = store.get("tot_client", null);
+  if (!clientId) {
+    clientId = crypto.randomUUID ? crypto.randomUUID() : Date.now().toString(36) + Math.random().toString(36).slice(2);
+    store.set("tot_client", clientId);
+  }
+  let name = store.get("tot_name", "");
+  if (API.isDemo) $("demoBadge").hidden = false;
+
+  // ---------- scaling ----------
+  function fit() {
+    const w = window.innerWidth, h = window.innerHeight;
+    const flow = w < 900 || w / h < 1.15;
+    document.body.classList.toggle("flow", flow);
+    $("stage").style.transform = flow ? "" : "translate(-50%, -50%) scale(" + Math.min(w / 1440, h / 810) * 0.98 + ")";
+  }
+  window.addEventListener("resize", fit); fit();
+
+  // ---------- send queue (latest value per key wins, retries when offline) ----------
+  const queue = new Map();
+  let sending = false, retryTimer = null;
+  function setSync(state) {
+    const el = $("sync"); el.className = "sync " + state;
+    el.textContent = state === "ok" ? "✓ saved" : state === "wait" ? "saving…" : "⚠ offline — retrying";
+  }
+  function enqueue(key, body) { queue.set(key, body); flush(); }
+  async function flush() {
+    if (sending || !queue.size) return;
+    sending = true; setSync("wait"); clearTimeout(retryTimer);
+    try {
+      while (queue.size) {
+        const [key, body] = queue.entries().next().value;
+        await API.post(body);
+        if (queue.get(key) === body) queue.delete(key);
+      }
+      setSync("ok");
+    } catch (e) { setSync("err"); retryTimer = setTimeout(flush, 3000); }
+    finally { sending = false; }
+  }
+  window.addEventListener("online", flush);
+  const save = (activity, key, value) =>
+    enqueue(activity + ":" + key, { action: "save", clientId, name, activity, key, value: typeof value === "string" ? value : JSON.stringify(value) });
+
+  // ======================= SLIDE: THIS OR THAT =======================
+  const TOT = CFG.tot;
+  let totChoices = store.get("tot_choices", {});
+  (function renderTot() {
+    const list = $("pairs");
+    TOT.pairs.forEach((p) => {
+      const li = document.createElement("li");
+      li.className = "pair"; li.dataset.id = p.id;
+      li.innerHTML = '<button type="button" class="opt" data-side="a" aria-pressed="false"></button><span class="or" aria-hidden="true">or</span><button type="button" class="opt" data-side="b" aria-pressed="false"></button>';
+      li.children[0].textContent = p.a; li.children[2].textContent = p.b;
+      list.appendChild(li);
+    });
+    list.addEventListener("click", (e) => {
+      const btn = e.target.closest(".opt"); if (!btn) return;
+      const id = btn.closest(".pair").dataset.id, side = btn.dataset.side;
+      if (totChoices[id] === side) return;
+      totChoices[id] = side; store.set("tot_choices", totChoices); paintTot();
+      save("tot", id, side);
+    });
+  })();
+  function paintTot() {
+    let n = 0;
+    $("pairs").querySelectorAll(".pair").forEach((li) => {
+      const c = totChoices[li.dataset.id]; if (c) n++;
+      li.classList.toggle("chosen", !!c);
+      li.querySelectorAll(".opt").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.side === c)));
+    });
+    const done = n === TOT.pairs.length, h = $("totHint");
+    h.classList.toggle("done", done);
+    h.textContent = done ? "All done! Now explain one or two of your choices to your partner." : n + " / " + TOT.pairs.length + " chosen";
+  }
+
+  // ======================= SLIDE: BUDGET =======================
+  const B = CFG.budget;
+  let budget = store.get("st_budget", { alloc: {}, submitted: null });
+  const bInputs = {};
+  (function renderBudget() {
+    const t = $("bTable");
+    B.assets.forEach((a) => {
+      const row = document.createElement("div");
+      row.className = "b-row"; row.dataset.id = a.id;
+      row.innerHTML = '<div class="lbl"></div><div class="stepper">' +
+        '<button type="button" data-d="-1" aria-label="minus ' + B.step + '">−</button>' +
+        '<input type="number" inputmode="numeric" min="0" max="' + B.total + '" step="1" aria-label="">' +
+        '<button type="button" data-d="1" aria-label="plus ' + B.step + '">+</button></div>';
+      row.querySelector(".lbl").textContent = a.label;
+      const inp = row.querySelector("input"); inp.setAttribute("aria-label", "Points for " + a.label);
+      bInputs[a.id] = inp; t.appendChild(row);
+    });
+    $("bQs").innerHTML = B.questions.map((q) => "<li>" + esc(q) + "</li>").join("");
+    t.addEventListener("click", (e) => {
+      const b = e.target.closest("button[data-d]"); if (!b) return;
+      const id = b.closest(".b-row").dataset.id;
+      const cur = Number(budget.alloc[id] || 0), d = Number(b.dataset.d);
+      let v = d > 0 ? Math.floor(cur / B.step) * B.step + B.step : Math.ceil(cur / B.step) * B.step - B.step;
+      const room = B.total - (sumBudget() - cur);
+      v = Math.max(0, Math.min(v, room));
+      setAlloc(id, v);
+    });
+    t.addEventListener("input", (e) => {
+      const inp = e.target.closest("input"); if (!inp) return;
+      const id = inp.closest(".b-row").dataset.id;
+      let v = parseInt(inp.value, 10); if (!isFinite(v) || v < 0) v = 0; if (v > B.total) v = B.total;
+      budget.alloc[id] = v; persistBudget(false);
+    });
+    t.addEventListener("focusout", (e) => { if (e.target.matches("input")) paintBudget(); });
+    $("bClear").addEventListener("click", () => { budget.alloc = {}; persistBudget(); });
+    $("bSubmit").addEventListener("click", () => {
+      if (sumBudget() !== B.total) return;
+      const alloc = {}; B.assets.forEach((a) => (alloc[a.id] = Number(budget.alloc[a.id] || 0)));
+      budget.submitted = alloc; store.set("st_budget", budget);
+      save("budget", "alloc", alloc); paintBudget();
+    });
+  })();
+  function sumBudget() { return B.assets.reduce((s, a) => s + Number(budget.alloc[a.id] || 0), 0); }
+  function setAlloc(id, v) { budget.alloc[id] = v; persistBudget(); }
+  function persistBudget(repaintInputs = true) { store.set("st_budget", budget); paintBudget(repaintInputs); }
+  function budgetDirty() {
+    if (!budget.submitted) return true;
+    return B.assets.some((a) => Number(budget.alloc[a.id] || 0) !== Number(budget.submitted[a.id] || 0));
+  }
+  function paintBudget(repaintInputs = true) {
+    const s = sumBudget(), left = B.total - s;
+    B.assets.forEach((a) => {
+      const v = Number(budget.alloc[a.id] || 0), row = bInputs[a.id].closest(".b-row");
+      if (repaintInputs && document.activeElement !== bInputs[a.id]) bInputs[a.id].value = v;
+      row.classList.toggle("has", v > 0);
+      row.querySelector('[data-d="-1"]').disabled = v <= 0;
+      row.querySelector('[data-d="1"]').disabled = left <= 0;
+    });
+    $("bSum").textContent = s;
+    $("bMeter").style.width = Math.min(100, (s / B.total) * 100) + "%";
+    const box = $("bTotal"); box.classList.toggle("full", s === B.total); box.classList.toggle("over", s > B.total);
+    const dirty = budgetDirty();
+    $("bMsg").textContent = s > B.total ? (s - B.total) + " points too many" :
+      s < B.total ? left + " points left" : (!dirty ? "Submitted ✓ — see the group ranking" : "Perfect — now submit!");
+    $("bSubmit").disabled = s !== B.total || !dirty;
+    $("bSubmit").textContent = !budget.submitted ? "Submit" : dirty ? "Update" : "Submitted ✓";
+  }
+
+  // ======================= GROUP RANKING =======================
+  let rankTimer = null;
+  async function loadRanking() {
+    try {
+      const data = await API.budgetRanking();
+      paintRanking(data);
+    } catch (e) { $("rSub").textContent = "Can’t load results — retrying…"; }
+  }
+  function paintRanking(data) {
+    const assets = data.assets || {}, mine = budget.submitted || {};
+    const rows = B.assets.map((a) => Object.assign({ id: a.id, label: a.label }, assets[a.id] || { avg: 0, min: 0, max: 0, sd: 0 }))
+      .sort((x, y) => y.avg - x.avg);
+    $("rSub").textContent = "Average points · " + data.count + (data.count === 1 ? " answer" : " answers") + " · updates live";
+    const top = Math.max(40, ...rows.map((r) => r.avg), ...Object.values(mine).map(Number));
+    $("rList").innerHTML = rows.map((r, i) =>
+      '<li class="r-row"><span class="r-rank">' + (i + 1) + '</span><span class="r-lbl">' + esc(r.label) + "</span>" +
+      '<span class="r-bar"><i style="width:' + (r.avg / top) * 100 + '%"></i>' +
+      (mine[r.id] != null ? '<u style="left:' + (Number(mine[r.id]) / top) * 100 + '%"></u>' : "") + "</span>" +
+      '<span class="r-val"><b>' + r.avg + "</b> pts<span>you: " + (mine[r.id] != null ? mine[r.id] : "—") + "</span></span></li>"
+    ).join("");
+    if (!data.count) { $("rHl").innerHTML = ""; return; }
+    const most = rows[0], least = rows[rows.length - 1];
+    const divided = rows.slice().sort((x, y) => y.sd - x.sd)[0];
+    $("rHl").innerHTML =
+      "<div><small>Most points</small><b>" + esc(most.label) + "</b></div>" +
+      "<div><small>Fewest points</small><b>" + esc(least.label) + "</b></div>" +
+      "<div><small>Most difficult to judge</small><b>" + esc(divided.label) + "</b> <span class='r-legend'>(" + divided.min + "–" + divided.max + " pts)</span></div>";
+  }
+
+  // ======================= SLIDE: MAKE THE CASE =======================
+  const C = CFG.case;
+  let cs = store.get("st_case", { s: null, side: null, expr: [] });
+  (function renderCase() {
+    $("cChips").innerHTML = C.expressions.map((x) =>
+      '<span class="chip-x" data-id="' + x.id + '"><button type="button" class="t" aria-pressed="false">' + esc(x.text) +
+      '</button><button type="button" class="q" aria-label="Meaning of ' + esc(x.text) + '">?</button></span>').join("");
+    $("cStmts").innerHTML = C.statements.map((s) =>
+      '<button type="button" class="stmt" role="radio" aria-checked="false" data-id="' + s.id + '">' + esc(s.text) + "</button>").join("");
+    $("cChips").addEventListener("click", (e) => {
+      const chip = e.target.closest(".chip-x"); if (!chip) return;
+      const x = C.expressions.find((y) => y.id === chip.dataset.id);
+      if (e.target.closest(".q")) {
+        const m = $("cMeaning"); m.classList.add("show");
+        m.innerHTML = "<span><b>" + esc(x.text) + "</b> — " + esc(x.meaning) + "</span>";
+        return;
+      }
+      const i = cs.expr.indexOf(x.id);
+      if (i >= 0) cs.expr.splice(i, 1); else cs.expr.push(x.id);
+      persistCase();
+    });
+    $("cStmts").addEventListener("click", (e) => {
+      const b = e.target.closest(".stmt"); if (!b) return;
+      cs.s = b.dataset.id; persistCase();
+    });
+    document.querySelectorAll(".side-btn").forEach((b) => b.addEventListener("click", () => { cs.side = b.dataset.side; persistCase(); }));
+  })();
+  function persistCase() {
+    store.set("st_case", cs); paintCase();
+    if (cs.s) save("case", "pick", { s: cs.s, side: cs.side, expr: cs.expr });
+  }
+  function paintCase() {
+    $("cChips").querySelectorAll(".chip-x").forEach((c) => {
+      const on = cs.expr.includes(c.dataset.id); c.classList.toggle("on", on);
+      c.querySelector(".t").setAttribute("aria-pressed", String(on));
+    });
+    $("cStmts").querySelectorAll(".stmt").forEach((b) => b.setAttribute("aria-checked", String(b.dataset.id === cs.s)));
+    document.querySelectorAll(".side-btn").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.side === cs.side)));
+    const n = cs.expr.length;
+    $("cCount").innerHTML = "<b class='" + (n >= C.minExpressions ? "ok" : "") + "'>" + n + " chosen</b>" +
+      (n >= C.minExpressions ? " — great!" : " · pick at least " + C.minExpressions + " in the box above");
+  }
+  // 30-second timer
+  let tLeft = C.timerSeconds, tInt = null;
+  const fmt = (s) => Math.floor(s / 60) + ":" + String(s % 60).padStart(2, "0");
+  function paintTimer() { $("tVal").textContent = fmt(tLeft); }
+  $("tStart").addEventListener("click", () => {
+    const t = $("timer");
+    if (tInt) { clearInterval(tInt); tInt = null; t.classList.remove("running"); $("tStart").textContent = "Start"; return; }
+    if (tLeft <= 0) tLeft = C.timerSeconds;
+    t.classList.remove("end"); t.classList.add("running"); $("tStart").textContent = "Pause";
+    tInt = setInterval(() => {
+      tLeft--; paintTimer();
+      if (tLeft <= 0) { clearInterval(tInt); tInt = null; t.classList.remove("running"); t.classList.add("end"); $("tVal").textContent = "Time!"; $("tStart").textContent = "Again"; }
+    }, 1000);
+    paintTimer();
+  });
+  $("tReset").addEventListener("click", () => {
+    clearInterval(tInt); tInt = null; tLeft = C.timerSeconds;
+    $("timer").classList.remove("running", "end"); $("tStart").textContent = "Start"; paintTimer();
+  });
+
+  // ======================= SLIDE: £10K =======================
+  const I = CFG.invest;
+  let inv = store.get("st_invest", { plan: [], flipped: [], touched: false });
+  const money = (n) => I.currency + Number(n).toLocaleString("en-GB");
+  (function renderInvest() {
+    $("iBudget").textContent = money(I.budget);
+    $("iCards").innerHTML = I.options.map((o) =>
+      '<div class="i-col" data-id="' + o.id + '">' +
+        '<div class="flip"><div class="flip-in">' +
+          '<div class="face f"><div class="nm">' + esc(o.name) + '</div><div class="pr">' + money(o.price) + '</div><img src="' + esc(o.img) + '" alt=""></div>' +
+          '<div class="face b">' + esc(o.back) + "</div>" +
+        '</div><button type="button" class="flip-btn" aria-label="Flip card: ' + esc(o.name) + '">↺</button></div>' +
+        '<button type="button" class="add-btn" aria-pressed="false"></button>' +
+      "</div>").join("");
+    $("iCards").addEventListener("click", (e) => {
+      const col = e.target.closest(".i-col"); if (!col) return;
+      const id = col.dataset.id;
+      if (e.target.closest(".flip")) {
+        const k = inv.flipped.indexOf(id);
+        if (k >= 0) inv.flipped.splice(k, 1); else inv.flipped.push(id);
+        store.set("st_invest", inv); paintInvest(); return;
+      }
+      const add = e.target.closest(".add-btn"); if (!add) return;
+      const k = inv.plan.indexOf(id);
+      if (k >= 0) inv.plan.splice(k, 1);
+      else {
+        const o = I.options.find((x) => x.id === id);
+        if (spent() + o.price > I.budget) { add.classList.remove("shake"); void add.offsetWidth; add.classList.add("shake"); return; }
+        inv.plan.push(id);
+      }
+      inv.touched = true; store.set("st_invest", inv); paintInvest();
+      save("invest", "plan", inv.plan);
+    });
+    $("howList").innerHTML = I.howTo.map((h) => "<li><b>" + esc(h[0]) + "</b> " + esc(h[1]) + "</li>").join("");
+    $("howBtn").addEventListener("click", () => { $("howModal").hidden = false; $("howClose").focus(); });
+    $("howClose").addEventListener("click", () => { $("howModal").hidden = true; $("howBtn").focus(); });
+    $("howModal").addEventListener("click", (e) => { if (e.target.id === "howModal") $("howModal").hidden = true; });
+  })();
+  function spent() { return inv.plan.reduce((s, id) => s + (I.options.find((o) => o.id === id) || { price: 0 }).price, 0); }
+  function paintInvest() {
+    const sp = spent(), left = I.budget - sp;
+    document.querySelectorAll(".i-col").forEach((col) => {
+      const id = col.dataset.id, o = I.options.find((x) => x.id === id), inPlan = inv.plan.includes(id);
+      col.classList.toggle("in", inPlan);
+      col.querySelector(".flip").classList.toggle("back", inv.flipped.includes(id));
+      const b = col.querySelector(".add-btn");
+      b.setAttribute("aria-pressed", String(inPlan));
+      b.textContent = inPlan ? "✓ In my plan" : o.price > left ? "Over budget" : "+ Add to plan";
+      b.disabled = !inPlan && o.price > left;
+    });
+    $("iSpent").textContent = money(sp);
+    $("iBar").style.width = (sp / I.budget) * 100 + "%";
+    $("iLeft").innerHTML = left === 0 ? "<b>Budget used ✓</b>" : money(left) + " left";
+  }
+
+  // ======================= NAVIGATION =======================
+  const SLIDES = ["tot", "budget", "ranking", "case", "invest"];
+  let cur = Math.min(Math.max(0, store.get("tot_slide", 0)), SLIDES.length - 1);
+  $("dots").innerHTML = SLIDES.map((s, i) => '<button type="button" aria-label="Slide ' + (i + 1) + '"></button>').join("");
+  $("dots").addEventListener("click", (e) => {
+    const i = [...$("dots").children].indexOf(e.target); if (i >= 0) go(i);
+  });
+  function go(i) {
+    cur = Math.min(Math.max(0, i), SLIDES.length - 1); store.set("tot_slide", cur);
+    SLIDES.forEach((s, k) => ($("s-" + s).hidden = k !== cur));
+    [...$("dots").children].forEach((d, k) => { d.classList.toggle("on", k === cur); d.setAttribute("aria-current", k === cur ? "step" : "false"); });
+    $("prev").disabled = cur === 0; $("next").disabled = cur === SLIDES.length - 1;
+    clearInterval(rankTimer); rankTimer = null;
+    if (SLIDES[cur] === "ranking") {
+      const ok = !!budget.submitted;
+      $("rGate").hidden = ok; $("rBody").hidden = !ok;
+      if (ok) { loadRanking(); rankTimer = setInterval(loadRanking, CFG.RANKING_REFRESH_MS || 5000); }
+    }
+    if (document.body.classList.contains("flow")) window.scrollTo(0, 0);
+  }
+  document.querySelectorAll("[data-go]").forEach((b) => b.addEventListener("click", () => go(SLIDES.indexOf(b.dataset.go))));
+  $("prev").addEventListener("click", () => go(cur - 1));
+  $("next").addEventListener("click", () => go(cur + 1));
+  document.addEventListener("keydown", (e) => {
+    if ($("foot").hidden || /INPUT|TEXTAREA/.test(document.activeElement.tagName) || !$("howModal").hidden) return;
+    if (e.key === "ArrowRight" || e.key === "PageDown") go(cur + 1);
+    if (e.key === "ArrowLeft" || e.key === "PageUp") go(cur - 1);
+  });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape" && !$("howModal").hidden) $("howModal").hidden = true; });
+
+  // ======================= JOIN =======================
+  function showDeck() {
+    $("join").hidden = true; $("foot").hidden = false;
+    $("whoName").textContent = name;
+    paintTot(); paintBudget(); paintCase(); paintInvest(); paintTimer();
+    go(cur);
+  }
+  function showJoin() {
+    SLIDES.forEach((s) => ($("s-" + s).hidden = true));
+    $("foot").hidden = true; $("join").hidden = false;
+    clearInterval(rankTimer);
+    $("nameInput").value = name; $("nameInput").focus();
+  }
+  $("joinForm").addEventListener("submit", (e) => {
+    e.preventDefault();
+    const v = $("nameInput").value.replace(/\s+/g, " ").trim();
+    if (v.length < 2) { $("joinHint").textContent = "Please enter your name."; return; }
+    name = v; store.set("tot_name", name);
+    enqueue("join", { action: "join", clientId, name });
+    showDeck();
+  });
+  $("changeName").addEventListener("click", showJoin);
+
+  if (name) {
+    // returning student: re-sync everything (all writes are idempotent upserts)
+    enqueue("join", { action: "join", clientId, name });
+    Object.keys(totChoices).forEach((id) => save("tot", id, totChoices[id]));
+    if (budget.submitted) save("budget", "alloc", budget.submitted);
+    if (cs.s) save("case", "pick", { s: cs.s, side: cs.side, expr: cs.expr });
+    if (inv.touched) save("invest", "plan", inv.plan);
+    showDeck();
+  } else {
+    showJoin();
+  }
+})();
+</script>
+</body>
+</html>
