@@ -20,7 +20,7 @@
   .btn.danger { color: #b42318; } .btn.danger:hover { border-color: #b42318; }
   .toggle { display: inline-flex; gap: 6px; align-items: center; font-size: 16px; font-weight: 700; user-select: none; }
   .toggle input { width: 18px; height: 18px; accent-color: var(--pink); }
-  .demo-note { background: #fff4d6; color: #8a5a00; border-radius: 10px; padding: 8px 12px; font-size: 15px; margin-top: 12px; }
+  .demo-note { background: #fde8e8; color: #8a1c1c; border: 2px solid #f5b5b5; border-radius: 10px; padding: 10px 14px; font-size: 16px; margin-top: 12px; }
 
   .stats { display: flex; gap: 12px; margin: 18px 0 14px; flex-wrap: wrap; align-items: flex-end; }
   .stat { background: #fff; border-radius: 14px; padding: 10px 18px; min-width: 130px; }
@@ -103,7 +103,7 @@
 
 <div class="gatebox" id="gate" hidden>
   <h1>Адмінка</h1>
-  <p>Введіть пароль адмінки (той, що ви вписали в <code>supabase/schema.sql</code> замість change-me).</p>
+  <p>Введіть пароль адмінки (його показав SQL Editor після запуску <code>supabase/schema.sql</code>).</p>
   <form id="gateForm">
     <input id="keyInput" type="password" autocomplete="current-password" placeholder="Пароль" required>
     <button class="btn-primary" type="submit" style="width:100%">Увійти</button>
@@ -128,8 +128,8 @@
     </div>
   </header>
   <div class="demo-note" id="demoNote" hidden>
-    ДЕМО-режим: <code>SUPABASE_URL</code> / <code>SUPABASE_KEY</code> у config.js порожні, тож тут видно лише відповіді з цього браузера.
-    Відкрийте index.html в іншій вкладці, щоб протестувати.
+    <b>ДЕМО-режим — відповіді студентів сюди НЕ потрапляють.</b> У <code>config.js</code> порожні <code>SUPABASE_URL</code> / <code>SUPABASE_KEY</code>,
+    тому кожен студент зберігає відповіді лише у своєму браузері, а тут видно тільки відповіді з цього браузера. Як підключити — README, розділ «Бекенд».
   </div>
 
   <div class="stats">

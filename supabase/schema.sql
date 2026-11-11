@@ -1,7 +1,7 @@
 -- =====================================================================
 --  Degree or Certificate? (ENG HUB) — схема Supabase
---  Виконайте ВЕСЬ файл один раз: Supabase → SQL Editor → New query → Run.
---  Перед запуском змініть пароль адмінки в останньому блоці (change-me).
+--  Виконайте ВЕСЬ файл: Supabase → SQL Editor → New query → Run.
+--  Пароль адмінки згенерується сам — його покаже результат запиту внизу.
 --
 --  Безпека: таблиці закриті (RLS без політик). Браузер працює лише через
 --  функції нижче, тож студенти не можуть читати чужі відповіді, а повні
@@ -126,6 +126,12 @@ revoke all on function public.join_student(text, text), public.save_response(tex
 grant execute on function public.join_student(text, text), public.save_response(text, text, text, text, text),
   public.budget_summary(), public.admin_results(text), public.admin_reset(text) to anon, authenticated;
 
--- ---------- ПАРОЛЬ АДМІНКИ: замініть change-me на свій ----------
-insert into public.app_settings (key, value) values ('admin_key', 'change-me')
-  on conflict (key) do update set value = excluded.value;
+-- ---------- ПАРОЛЬ АДМІНКИ ----------
+-- Генерується випадково під час першого запуску (повторний запуск його НЕ змінює).
+-- Пароль покаже останній SELECT нижче у вкладці Results.
+-- Хочете свій пароль: update public.app_settings set value = 'мій-пароль' where key = 'admin_key';
+insert into public.app_settings (key, value)
+  values ('admin_key', substr(md5(random()::text || clock_timestamp()::text), 1, 10))
+  on conflict (key) do nothing;
+
+select value as "Пароль адмінки (збережіть!)" from public.app_settings where key = 'admin_key';

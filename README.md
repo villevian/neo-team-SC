@@ -23,8 +23,8 @@
 ## 1. Бекенд (Supabase, ~5 хв)
 
 1. Увійдіть у Supabase під потрібним акаунтом і створіть проєкт (**New project**). Регіон: Frankfurt або найближчий.
-2. **SQL Editor → New query**. Вставте весь вміст `supabase/schema.sql`.
-   В останньому рядку замініть `change-me` на свій пароль для адмінки й натисніть **Run**.
+2. **SQL Editor → New query**. Вставте весь вміст `supabase/schema.sql` і натисніть **Run**.
+   Унизу (Results) з'явиться згенерований **пароль адмінки** — збережіть його.
 3. **Project Settings → API Keys** (або кнопка **Connect**). Скопіюйте:
    - **Project URL** (`https://xxxx.supabase.co`)
    - **Publishable key** (або legacy **anon public**). ⚠️ Не `service_role` і не `secret`!
